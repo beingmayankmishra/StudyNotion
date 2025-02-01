@@ -1,10 +1,5 @@
 
 # StudyNotion - EdTech Platform
-:rocket: [Link to website][]
-<<<<<<< HEAD
-
-=======
->>>>>>> 3c437c2ed9a07c2632d4afa3871be21aa5f17796
 
 
 ![Main Page](images/mainpage.png)
