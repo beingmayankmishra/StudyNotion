@@ -9,33 +9,35 @@ export default function Instructor() {
     const { token } = useSelector((state) => state.auth)
     const { user } = useSelector((state) => state.profile)
     const [loading, setLoading] = useState(false)
-    const [instructorData, setInstructorData] = useState(null)
+    const [instructorData, setInstructorData] = useState([])
     const [courses, setCourses] = useState([])
-  
+
     useEffect(() => {
       ;(async () => {
         setLoading(true)
-        const instructorApiData = await getInstructorData(token)
-        const result = await fetchInstructorCourses(token)
+        const instructorApiData = await getInstructorData(token) || []
+        const result = await fetchInstructorCourses(token) || []
+        
         console.log(instructorApiData)
-        if (instructorApiData.length) setInstructorData(instructorApiData)
-        if (result) {
+
+        if (Array.isArray(instructorApiData) && instructorApiData.length > 0) {
+          setInstructorData(instructorApiData)
+        }
+        if (Array.isArray(result)) {
           setCourses(result)
         }
         setLoading(false)
       })()
-    }, [])
-  
-    const totalAmount = instructorData?.reduce(
-      (acc, curr) => acc + curr.totalAmountGenerated,
-      0
-    )
-  
-    const totalStudents = instructorData?.reduce(
-      (acc, curr) => acc + curr.totalStudentsEnrolled,
-      0
-    )
-  
+    }, [token])
+
+    const totalAmount = Array.isArray(instructorData)
+      ? instructorData.reduce((acc, curr) => acc + (curr.totalAmountGenerated || 0), 0)
+      : 0
+
+    const totalStudents = Array.isArray(instructorData)
+      ? instructorData.reduce((acc, curr) => acc + (curr.totalStudentsEnrolled || 0), 0)
+      : 0
+
     return (
       <div>
         <div className="space-y-2">
@@ -96,7 +98,7 @@ export default function Instructor() {
                 </Link>
               </div>
               <div className="my-4 flex items-start space-x-6">
-                {courses.slice(0, 3).map((course) => (
+                {Array.isArray(courses) && courses.slice(0, 3).map((course) => (
                   <div key={course._id} className="w-1/3">
                     <img
                       src={course.thumbnail}
@@ -109,7 +111,7 @@ export default function Instructor() {
                       </p>
                       <div className="mt-1 flex items-center space-x-2">
                         <p className="text-xs font-medium text-richblack-300">
-                          {course.studentsEnroled.length} students
+                          {course.studentsEnroled?.length || 0} students
                         </p>
                         <p className="text-xs font-medium text-richblack-300">
                           |
